@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Home Rhythm Voice</title>
+
+  <style>
+    :root {
+      --cream: #f8f3e8;
+      --ink: #2f3b34;
+      --muted: #77867d;
+      --green: #3f7865;
+      --green-soft: #dfeee5;
+      --lilac: #aa96b5;
+      --line: #e5dccd;
+      --white: #fffdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+
+      min-height: 100vh;
+
+      display: flex;
+      justify-content: center;
+
+      background: var(--cream);
+
+      color: var(--ink);
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+
+      padding:
+        34px
+        22px
+        50px;
+    }
+
+    .brand {
+      color: var(--green);
+
+      font-size: 12px;
+      font-weight: 900;
+
+      letter-spacing: 3px;
+    }
+
+    h1 {
+      margin:
+        8px
+        0
+        8px;
+
+      font-size: 31px;
+      line-height: 1.15;
+    }
+
+    .intro {
+      color: var(--muted);
+
+      font-size: 17px;
+      line-height: 1.5;
+    }
+
+    .voice-card {
+      margin-top: 32px;
+
+      padding:
+        30px
+        22px;
+
+      border-radius: 32px;
+
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #397360,
+          #52826f
+        );
+
+      color: white;
+    }
+
+    .mic-button {
+      width: 112px;
+      height: 112px;
+
+      margin:
+        8px
+        auto
+        18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 0;
+      border-radius: 50%;
+
+      background:
+        rgba(255,255,255,.17);
+
+      color: white;
+
+      font-size: 45px;
+
+      cursor: pointer;
+    }
+
+    .mic-button.recording {
+      animation:
+        pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.08);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .status {
+      min-height: 24px;
+
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .transcript-card {
+      margin-top: 22px;
+
+      padding: 20px;
+
+      border:
+        1px solid var(--line);
+
+      border-radius: 24px;
+
+      background: var(--white);
+    }
+
+    .label {
+      color: var(--muted);
+
+      font-size: 12px;
+      font-weight: 900;
+
+      letter-spacing: 1.7px;
+
+      text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+
+      margin-top: 10px;
+
+      padding: 0;
+
+      border: 0;
+      outline: none;
+
+      resize: none;
+
+      background: transparent;
+
+      color: var(--ink);
+
+      font: inherit;
+      font-size: 19px;
+      line-height: 1.45;
+    }
+
+    audio {
+      width: 100%;
+
+      margin-top: 18px;
+    }
+
+    .actions {
+      display: grid;
+
+      grid-template-columns:
+        1fr
+        1.4fr;
+
+      gap: 10px;
+
+      margin-top: 22px;
+    }
+
+    button.secondary,
+    button.primary {
+      border: 0;
+
+      border-radius: 17px;
+
+      padding: 16px;
+
+      font-size: 16px;
+      font-weight: 850;
+
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #ece4d8;
+      color: var(--ink);
+    }
+
+    button.primary {
+      background: var(--green);
+      color: white;
+    }
+
+    .note {
+      margin-top: 18px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="brand">
+      HOME RHYTHM
+    </div>
+
+    <h1>
+      Tell me what tomorrow needs
+    </h1>
+
+    <div class="intro">
+      Tap the microphone and say the urgent task
+      you would like Home Rhythm to remember.
+    </div>
+
+
+    <section class="voice-card">
+
+      <button
+        id="micButton"
+        class="mic-button"
+        onclick="toggleRecording()"
+      >
+        🎙
+      </button>
+
+      <div
+        id="status"
+        class="status"
+      >
+        Tap to begin
+      </div>
+
+    </section>
+
+
+    <section class="transcript-card">
+
+      <div class="label">
+        What I heard
+      </div>
+
+      <textarea
+        id="transcript"
+        placeholder="Your spoken response will appear here."
+      ></textarea>
+
+
+      <audio
+        id="audioPlayback"
+        controls
+        style="display:none;"
+      ></audio>
+
+    </section>
+
+
+    <div class="actions">
+
+      <button
+        class="secondary"
+        onclick="resetVoice()"
+      >
+        Start again
+      </button>
+
+
+      <button
+        class="primary"
+        onclick="useResponse()"
+      >
+        Use this response
+      </button>
+
+    </div>
+
+
+    <div class="note">
+      The recording is used only during this voice step.
+      The next version can optionally save voice notes
+      if you decide that is useful.
+    </div>
+
+  </main>
+
+
+  <script>
+
+    let mediaRecorder = null;
+
+    let audioChunks = [];
+
+    let recognition = null;
+
+    let isRecording = false;
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const returnUrl =
+      params.get("returnUrl") || "";
+
+
+    const person =
+      params.get("person") || "Mom";
+
+
+    function setupRecognition() {
+
+      const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+      if (!SpeechRecognition) {
+        return;
+      }
+
+
+      recognition =
+        new SpeechRecognition();
+
+
+      recognition.continuous = true;
+
+      recognition.interimResults = true;
+
+      recognition.lang = "en-IN";
+
+
+      recognition.onresult =
+        function(event) {
+
+          let finalText = "";
+
+          let interimText = "";
+
+
+          for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+          ) {
+
+            const text =
+              event.results[i][0].transcript;
+
+
+            if (
+              event.results[i].isFinal
+            ) {
+
+              finalText += text;
+
+            } else {
+
+              interimText += text;
+
+            }
+          }
+
+
+          const textarea =
+            document.getElementById(
+              "transcript"
+            );
+
+
+          if (finalText) {
+
+            const existing =
+              textarea.value.trim();
+
+
+            textarea.value =
+              existing
+                ? existing +
+                  " " +
+                  finalText.trim()
+                : finalText.trim();
+
+          }
+
+
+          document
+            .getElementById(
+              "status"
+            )
+            .textContent =
+              interimText
+                ? interimText
+                : "Listening…";
+        };
+
+
+      recognition.onerror =
+        function() {
+
+          document
+            .getElementById(
+              "status"
+            )
+            .textContent =
+              "Recording continues. You can edit the text below.";
+        };
+    }
+
+
+    async function toggleRecording() {
+
+      if (isRecording) {
+
+        stopRecording();
+
+        return;
+      }
+
+
+      try {
+
+        const stream =
+          await navigator
+            .mediaDevices
+            .getUserMedia({
+              audio: true
+            });
+
+
+        audioChunks = [];
+
+
+        mediaRecorder =
+          new MediaRecorder(
+            stream
+          );
+
+
+        mediaRecorder.ondataavailable =
+          function(event) {
+
+            if (
+              event.data.size > 0
+            ) {
+
+              audioChunks.push(
+                event.data
+              );
+            }
+          };
+
+
+        mediaRecorder.onstop =
+          function() {
+
+            const blob =
+              new Blob(
+                audioChunks,
+                {
+                  type:
+                    mediaRecorder
+                      .mimeType ||
+                    "audio/webm"
+                }
+              );
+
+
+            const audioUrl =
+              URL.createObjectURL(
+                blob
+              );
+
+
+            const player =
+              document.getElementById(
+                "audioPlayback"
+              );
+
+
+            player.src =
+              audioUrl;
+
+
+            player.style.display =
+              "block";
+
+
+            stream
+              .getTracks()
+              .forEach(
+                track =>
+                  track.stop()
+              );
+          };
+
+
+        mediaRecorder.start();
+
+
+        if (recognition) {
+
+          try {
+            recognition.start();
+          } catch (error) {
+          }
+        }
+
+
+        isRecording = true;
+
+
+        document
+          .getElementById(
+            "micButton"
+          )
+          .classList
+          .add("recording");
+
+
+        document
+          .getElementById(
+            "status"
+          )
+          .textContent =
+            "Listening… tap again when finished";
+
+
+      } catch (error) {
+
+        document
+          .getElementById(
+            "status"
+          )
+          .textContent =
+            "Microphone permission is needed to record.";
+
+      }
+    }
+
+
+    function stopRecording() {
+
+      if (
+        mediaRecorder &&
+        mediaRecorder.state !==
+          "inactive"
+      ) {
+
+        mediaRecorder.stop();
+      }
+
+
+      if (recognition) {
+
+        try {
+          recognition.stop();
+        } catch (error) {
+        }
+      }
+
+
+      isRecording = false;
+
+
+      document
+        .getElementById(
+          "micButton"
+        )
+        .classList
+        .remove("recording");
+
+
+      document
+        .getElementById(
+          "status"
+        )
+        .textContent =
+          "Finished. Check what I heard below.";
+    }
+
+
+    function resetVoice() {
+
+      if (isRecording) {
+        stopRecording();
+      }
+
+
+      document
+        .getElementById(
+          "transcript"
+        )
+        .value = "";
+
+
+      const player =
+        document.getElementById(
+          "audioPlayback"
+        );
+
+
+      player.pause();
+
+      player.removeAttribute(
+        "src"
+      );
+
+      player.style.display =
+        "none";
+
+
+      document
+        .getElementById(
+          "status"
+        )
+        .textContent =
+          "Tap to begin";
+    }
+
+
+    function useResponse() {
+
+      const text =
+        document
+          .getElementById(
+            "transcript"
+          )
+          .value
+          .trim();
+
+
+      if (!text) {
+
+        document
+          .getElementById(
+            "status"
+          )
+          .textContent =
+            "Please record or enter the task first.";
+
+        return;
+      }
+
+
+      if (!returnUrl) {
+
+        document
+          .getElementById(
+            "status"
+          )
+          .textContent =
+            "Voice captured successfully. Home Rhythm will be linked in the next step.";
+
+        return;
+      }
+
+
+      const separator =
+        returnUrl.includes("?")
+          ? "&"
+          : "?";
+
+
+      const destination =
+        returnUrl +
+        separator +
+        "voiceText=" +
+        encodeURIComponent(text) +
+        "&person=" +
+        encodeURIComponent(person);
+
+
+      window.location.href =
+        destination;
+    }
+
+
+    setupRecognition();
+
+  </script>
+
+</body>
+</html>
