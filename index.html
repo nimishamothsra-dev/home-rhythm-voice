@@ -126,6 +126,10 @@
       font-size: 45px;
 
       cursor: pointer;
+      touch-action: manipulation;
+
+      position: relative;
+      z-index: 5;
     }
 
     .mic-button.recording {
@@ -275,12 +279,12 @@
     <section class="voice-card">
 
       <button
-        id="micButton"
-        class="mic-button"
-        onclick="toggleRecording()"
-      >
-        🎙
-      </button>
+  id="micButton"
+  type="button"
+  class="mic-button"
+>
+  🎙
+</button>
 
       <div
         id="status"
@@ -735,7 +739,43 @@
         destination;
     }
 
+    const micButton =
+  document.getElementById(
+    "micButton"
+  );
 
+
+micButton.addEventListener(
+  "click",
+  function() {
+
+    document
+      .getElementById(
+        "status"
+      )
+      .textContent =
+        "Microphone tapped…";
+
+
+    toggleRecording();
+
+  }
+);
+
+    if (
+  !navigator.mediaDevices ||
+  !navigator.mediaDevices.getUserMedia
+) {
+
+  document
+    .getElementById(
+      "status"
+    )
+    .textContent =
+      "This browser does not currently allow microphone recording. Open this page directly in Safari or Chrome.";
+
+}
+    
     setupRecognition();
 
   </script>
